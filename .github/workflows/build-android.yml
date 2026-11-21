@@ -1,0 +1,42 @@
+
+name: Build Teen Patti Club APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get source
+        uses: actions/checkout@v4
+
+      - name: Extract ZIP
+        run: |
+          mkdir project
+          unzip teen-patti-club-starter.zip -d project
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Build Android APK
+        run: |
+          cd project/teen-patti-club-starter/mobile
+          flutter create . --platforms android
+          flutter pub get
+          flutter build apk --release
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Teen-Patti-Club-APK
+          path: project/teen-patti-club-starter/mobile/build/app/outputs/flutter-apk/app-release.apk
+        
